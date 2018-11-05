@@ -1,0 +1,13 @@
+{
+    "name": "scaleplan/symfony-validators",
+    "description": "Additional Symfony validators",
+    "autoload": {
+        "psr-4": {
+            "Scaleplan\\Validator\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.0",
+        "symfony/validator": "*"
+    }
+}
