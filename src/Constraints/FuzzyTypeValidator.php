@@ -19,7 +19,7 @@ class FuzzyTypeValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof FuzzyType) {
-            throw new UnexpectedTypeException($constraint, __CLASS__);
+            throw new UnexpectedTypeException($constraint, __NAMESPACE__ . '\\' . FuzzyType::class);
         }
 
         if (null === $value) {
