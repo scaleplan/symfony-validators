@@ -7,7 +7,8 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 /**
  * Class IsInstanceOfValidator
- * @package AppBundle\Validator\Constraints
+ *
+ * @package Scaleplan\Validator\Constraints
  */
 class IsInstanceOfValidator extends ConstraintValidator
 {

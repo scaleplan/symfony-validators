@@ -5,24 +5,19 @@ namespace Scaleplan\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * Class IsInstanceOf
+ * Class E164
  *
  * @package Constraints
  *
  * @Annotation
  */
-class IsInstanceOf extends Constraint
+class E164 extends Constraint
 {
-    /**
-     * @var string
-     */
-    public $classname;
-
     /**
      * @return string
      */
     public function validatedBy()
     {
-        return IsInstanceOfValidator::class;
+        return E164Validator::class;
     }
 }

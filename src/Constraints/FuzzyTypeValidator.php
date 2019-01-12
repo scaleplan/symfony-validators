@@ -3,7 +3,7 @@
 namespace Scaleplan\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\Constraints\TypeValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
  *
  * @package Scaleplan\Validator\Constraints
  */
-class FuzzyTypeValidator extends ConstraintValidator
+class FuzzyTypeValidator extends TypeValidator
 {
     /**
      * {@inheritdoc}

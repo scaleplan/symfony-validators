@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 /**
  * Class CaseInsensitiveChoiceValidator
  *
- * @package AppBundle\Validator\Constraints
+ * @package Scaleplan\Validator\Constraints
  *
  * Validator for detect invalid format of sorting section in request template objects
  */

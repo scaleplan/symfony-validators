@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 /**
  * Class AllowDependencyValidator
  *
- * @package AppBundle\Validator\Constraints
+ * @package Scaleplan\Validator\Constraints
  *
  * Validator class for detect discrepancy properties in request templates objects
  * Example condition: If the object contains property "x"
