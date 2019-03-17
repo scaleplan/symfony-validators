@@ -14,12 +14,13 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 class FuzzyTypeValidator extends TypeValidator
 {
     /**
-     * {@inheritdoc}
+     * @param $value
+     * @param Constraint $constraint
      */
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint) : void
     {
         if (!$constraint instanceof FuzzyType) {
-            throw new UnexpectedTypeException($constraint, __NAMESPACE__ . '\\' . FuzzyType::class);
+            throw new UnexpectedTypeException($constraint, FuzzyType::class);
         }
 
         if (null === $value) {
@@ -27,15 +28,19 @@ class FuzzyTypeValidator extends TypeValidator
         }
 
         $type = strtolower($constraint->type);
-        $type = 'boolean' == $type ? 'bool' : $constraint->type;
+        $type = 'boolean' === $type ? 'bool' : $constraint->type;
         $isFunction = 'is_'.$type;
         $ctypeFunction = 'ctype_'.$type;
 
         if (\function_exists($isFunction) && $isFunction($value)) {
             return;
-        } elseif (\function_exists($ctypeFunction) && $ctypeFunction($value)) {
+        }
+
+        if (\function_exists($ctypeFunction) && $ctypeFunction($value)) {
             return;
-        } elseif ($value instanceof $constraint->type) {
+        }
+
+        if ($value instanceof $constraint->type) {
             return;
         }
 

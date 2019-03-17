@@ -17,10 +17,10 @@ class E164Validator extends ConstraintValidator
      * @param mixed $value
      * @param Constraint $constraint
      */
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint) : void
     {
         if (!$constraint instanceof E164) {
-            throw new UnexpectedTypeException($constraint, __NAMESPACE__ . '\\' . E164::class);
+            throw new UnexpectedTypeException($constraint, E164::class);
         }
 
         if (null === $value) {

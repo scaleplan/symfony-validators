@@ -17,7 +17,10 @@ use Symfony\Component\Validator\Constraint;
  */
 class AllowDependency extends Constraint
 {
-    public function validatedBy()
+    /**
+     * @return string
+     */
+    public function validatedBy() : string
     {
         return AllowDependencyValidator::class;
     }
@@ -33,17 +36,17 @@ class AllowDependency extends Constraint
     public $message;
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function getDefaultOption()
+    public function getDefaultOption() : string
     {
         return 'dependencies';
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
-    public function getRequiredOptions()
+    public function getRequiredOptions() : array
     {
         return ['dependencies'];
     }

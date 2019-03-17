@@ -16,7 +16,7 @@ class E164 extends Constraint
     /**
      * @return string
      */
-    public function validatedBy()
+    public function validatedBy() : string
     {
         return E164Validator::class;
     }

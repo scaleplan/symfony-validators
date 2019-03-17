@@ -18,26 +18,8 @@ class CaseInsensitiveChoice extends Choice
     /**
      * @return string
      */
-    public function validatedBy()
+    public function validatedBy() : string
     {
         return CaseInsensitiveChoiceValidator::class;
-    }
-
-    /**
-     * @var array
-     */
-    public $choices;
-
-    /**
-     * @var bool
-     */
-    public $multiple;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefaultOption()
-    {
-        return 'choices';
     }
 }

@@ -17,9 +17,10 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 class CaseInsensitiveChoiceValidator extends ConstraintValidator
 {
     /**
-     * {@inheritdoc}
+     * @param mixed $value
+     * @param Constraint $constraint
      */
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint) : void
     {
         if (!$constraint instanceof CaseInsensitiveChoice) {
             throw new UnexpectedTypeException($constraint, CaseInsensitiveChoice::class);

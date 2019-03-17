@@ -16,7 +16,7 @@ class FuzzyType extends Type
     /**
      * @return string
      */
-    public function validatedBy()
+    public function validatedBy() : string
     {
         return FuzzyTypeValidator::class;
     }

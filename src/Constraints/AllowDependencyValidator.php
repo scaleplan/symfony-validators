@@ -21,12 +21,13 @@ class AllowDependencyValidator extends ConstraintValidator
      * @param mixed $value
      * @param \Symfony\Component\Validator\Constraint $constraint
      */
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint) : void
     {
         if (!$constraint instanceof AllowDependency) {
             throw new UnexpectedTypeException($constraint, AllowDependency::class);
         }
 
+        /** @var \object $contextObject */
         $contextObject = $this->context->getObject();
 
         foreach ($constraint->dependencies as $dependency) {
