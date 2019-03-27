@@ -27,7 +27,7 @@ class AllowDependencyValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, AllowDependency::class);
         }
 
-        /** @var \object $contextObject */
+        /** @var object $contextObject */
         $contextObject = $this->context->getObject();
 
         foreach ($constraint->dependencies as $dependency) {
