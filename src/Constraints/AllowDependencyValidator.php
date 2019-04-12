@@ -19,7 +19,7 @@ class AllowDependencyValidator extends ConstraintValidator
 {
     /**
      * @param mixed $value
-     * @param \Symfony\Component\Validator\Constraint $constraint
+     * @param Constraint $constraint
      */
     public function validate($value, Constraint $constraint) : void
     {
