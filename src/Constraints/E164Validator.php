@@ -27,7 +27,7 @@ class E164Validator extends ConstraintValidator
             return;
         }
 
-        if (!preg_match('^\+?[1-9]\d{1,14}$', $value)) {
+        if (!preg_match('/^\+?[1-9]\d{1,14}$/', $value)) {
             $this->context->buildViolation('Value must be e164 standard phone number')->addViolation();
         }
     }
