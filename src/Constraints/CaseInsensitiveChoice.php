@@ -2,7 +2,7 @@
 
 namespace Scaleplan\Validator\Constraints;
 
-use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\NotStrictChoice;
 
 /**
  * Class CaseInsensitiveChoice
@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints\Choice;
  *
  * Constraint class for detect invalid format of sorting section in request template objects
  */
-class CaseInsensitiveChoice extends Choice
+class CaseInsensitiveChoice extends NotStrictChoice
 {
     /**
      * @return string
