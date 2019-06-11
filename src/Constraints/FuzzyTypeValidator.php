@@ -44,20 +44,18 @@ class FuzzyTypeValidator extends TypeValidator
             return;
         }
 
-        if ($type === 'float') {
-            if (false !== \filter_var($value, FILTER_VALIDATE_FLOAT)) {
-                settype($value, $type);
-                return;
-            }
-        } else {
-            $tmpType = gettype($value);
-            $tmp = $value;
-            settype($tmp, $type);
-            settype($tmp, $tmpType);
-            if ($tmp === $value) {
-                settype($value, $type);
-                return;
-            }
+        if ($type === 'float' && false !== \filter_var($value, FILTER_VALIDATE_FLOAT)) {
+            settype($value, $type);
+            return;
+        }
+
+        $tmpType = gettype($value);
+        $tmp = $value;
+        settype($tmp, $type);
+        settype($tmp, $tmpType);
+        if ($tmp === $value) {
+            settype($value, $type);
+            return;
         }
 
         $this->context->buildViolation($constraint->message)
