@@ -36,6 +36,16 @@ class AllowDependency extends Constraint
     public $message;
 
     /**
+     * @var bool
+     */
+    public $reverse = false;
+
+    /**
+     * @var bool
+     */
+    public $strict = false;
+
+    /**
      * @return string
      */
     public function getDefaultOption() : string

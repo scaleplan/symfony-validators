@@ -30,18 +30,51 @@ class AllowDependencyValidator extends ConstraintValidator
         /** @var object $contextObject */
         $contextObject = $this->context->getObject();
 
+        if ($value === null || (!$constraint->strict && $value === '')) {
+            return;
+        }
+
         foreach ($constraint->dependencies as $dependency) {
             $methodName = 'get' . ucfirst($dependency);
-            if (!method_exists($contextObject, $methodName) || ($contextObject->{$methodName}() === null && $value)) {
-                $this->context->setNode($value, $contextObject, null, $dependency);
-                $this->context
-                    ->buildViolation(
-                        $constraint->message
-                        ?? 'Not null property "{{ filter }}" required not null property {{{ dependency }}}.'
-                    )
-                    ->setParameter('{{ filter }}', $this->context->getPropertyName())
-                    ->setParameter('{{ dependency }}', $dependency)
-                    ->addViolation();
+            if (!$constraint->strict) {
+                if ((!$constraint->reverse
+                        && (!method_exists($contextObject, $methodName)
+                            || $contextObject->{$methodName}() === null || $contextObject->{$methodName}() === ''))
+                    || ($constraint->reverse
+                        && (method_exists($contextObject, $methodName)
+                            && ($contextObject->{$methodName}() !== null && $contextObject->{$methodName}() !== '')))) {
+                    $this->context->setNode($value, $contextObject, null, $dependency);
+                    $this->context
+                        ->buildViolation(
+                            $constraint->message
+                            ?? 'Not null property "{{ filter }}" required not null property {{{ dependency }}}.'
+                        )
+                        ->setParameter('{{ filter }}', $this->context->getPropertyName())
+                        ->setParameter('{{ dependency }}', $dependency)
+                        ->addViolation();
+                }
+                return;
+            }
+
+            if ($constraint->strict) {
+                if ((!$constraint->reverse
+                        && (!method_exists($contextObject, $methodName) || $contextObject->{$methodName}() === null))
+                    || ($constraint->reverse
+                        && (method_exists($contextObject, $methodName) && $contextObject->{$methodName}() !== null))) {
+
+                    $this->context->setNode($value, $contextObject, null, $dependency);
+                    $this->context
+                        ->buildViolation(
+                            $constraint->message
+                            ?? ($constraint->reverse
+                                ? 'Not null property "{{ filter }}" required null property {{{ dependency }}}.'
+                                : 'Not null property "{{ filter }}" required not null property {{{ dependency }}}.')
+                        )
+                        ->setParameter('{{ filter }}', $this->context->getPropertyName())
+                        ->setParameter('{{ dependency }}', $dependency)
+                        ->addViolation();
+                }
+                return;
             }
         }
     }
