@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
  * Class E164Validator
- * 
+ *
  * @package Scaleplan\Validator\Constraints
  */
 class E164Validator extends ConstraintValidator
