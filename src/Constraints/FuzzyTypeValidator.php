@@ -23,7 +23,12 @@ class FuzzyTypeValidator extends TypeValidator
             throw new UnexpectedTypeException($constraint, FuzzyType::class);
         }
 
+        if ($constraint->type !== 'string' && $value === '') {
+            $value = null;
+        }
+
         if (null === $value) {
+            $this->setValue($value);
             return;
         }
 
@@ -46,6 +51,7 @@ class FuzzyTypeValidator extends TypeValidator
 
         if ($type === 'float' && false !== \filter_var($value, FILTER_VALIDATE_FLOAT)) {
             settype($value, $type);
+            $this->setValue($value);
             return;
         }
 
@@ -55,6 +61,7 @@ class FuzzyTypeValidator extends TypeValidator
         settype($tmp, $tmpType);
         if ($tmp === $value) {
             settype($value, $type);
+            $this->setValue($value);
             return;
         }
 
@@ -63,5 +70,19 @@ class FuzzyTypeValidator extends TypeValidator
             ->setParameter('{{ type }}', $constraint->type)
             ->setCode(FuzzyType::INVALID_TYPE_ERROR)
             ->addViolation();
+    }
+
+    /**
+     * @param $value
+     */
+    protected function setValue($value) : void
+    {
+        $object = $this->context->getObject();
+        if ($object) {
+            $object->{'set' . ucfirst($this->context->getPropertyPath())}($value);
+            $this->context->setNode(
+                $value, $object, $this->context->getMetadata(), $this->context->getPropertyPath()
+            );
+        }
     }
 }

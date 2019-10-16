@@ -23,7 +23,7 @@ class E164Validator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, E164::class);
         }
 
-        if (null === $value) {
+        if (null === $value || '' === $value) {
             return;
         }
 
