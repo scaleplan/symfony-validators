@@ -25,10 +25,10 @@ class FuzzyTypeValidator extends TypeValidator
 
         if ($constraint->type !== 'string' && $value === '') {
             $value = null;
+            $this->setValue($value);
         }
 
         if (null === $value) {
-            $this->setValue($value);
             return;
         }
 
