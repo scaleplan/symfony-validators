@@ -78,7 +78,7 @@ class FuzzyTypeValidator extends TypeValidator
     protected function setValue($value) : void
     {
         $object = $this->context->getObject();
-        if ($object) {
+        if ($object && method_exists($object, 'set' . ucfirst($this->context->getPropertyPath()))) {
             $object->{'set' . ucfirst($this->context->getPropertyPath())}($value);
             $this->context->setNode(
                 $value, $object, $this->context->getMetadata(), $this->context->getPropertyPath()
