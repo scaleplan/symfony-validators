@@ -46,6 +46,11 @@ class AllowDependency extends Constraint
     public $strict = false;
 
     /**
+     * @var bool
+     */
+    public $all = true;
+
+    /**
      * @return string
      */
     public function getDefaultOption() : string

@@ -5,6 +5,7 @@ namespace Scaleplan\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 
 /**
  * Class AllowDependencyValidator
@@ -34,6 +35,7 @@ class AllowDependencyValidator extends ConstraintValidator
             return;
         }
 
+        $violations = [];
         foreach ($constraint->dependencies as $dependency) {
             $methodName = 'get' . ucfirst($dependency);
             if (!$constraint->strict) {
@@ -44,14 +46,13 @@ class AllowDependencyValidator extends ConstraintValidator
                         && (method_exists($contextObject, $methodName)
                             && ($contextObject->{$methodName}() !== null && $contextObject->{$methodName}() !== '')))) {
                     $this->context->setNode($value, $contextObject, null, $dependency);
-                    $this->context
+                    $violations[] = $this->context
                         ->buildViolation(
                             $constraint->message
                             ?? 'Not null property "{{ filter }}" required not null property {{{ dependency }}}.'
                         )
-                        ->setParameter('{{ filter }}', $this->context->getPropertyName())
-                        ->setParameter('{{ dependency }}', $dependency)
-                        ->addViolation();
+                        ->setParameter('{{ filter }}', $this->context->getPropertyPath())
+                        ->setParameter('{{ dependency }}', $dependency);
                 }
                 return;
             }
@@ -63,18 +64,26 @@ class AllowDependencyValidator extends ConstraintValidator
                         && (method_exists($contextObject, $methodName) && $contextObject->{$methodName}() !== null))) {
 
                     $this->context->setNode($value, $contextObject, null, $dependency);
-                    $this->context
+                    $violations[] = $this->context
                         ->buildViolation(
                             $constraint->message
                             ?? ($constraint->reverse
                                 ? 'Not null property "{{ filter }}" required null property {{{ dependency }}}.'
                                 : 'Not null property "{{ filter }}" required not null property {{{ dependency }}}.')
                         )
-                        ->setParameter('{{ filter }}', $this->context->getPropertyName())
-                        ->setParameter('{{ dependency }}', $dependency)
-                        ->addViolation();
+                        ->setParameter('{{ filter }}', $this->context->getPropertyPath())
+                        ->setParameter('{{ dependency }}', $dependency);
                 }
                 return;
+            }
+
+            if (!$constraint->all && count($constraint->dependencies) > count($violations)) {
+                return;
+            }
+
+            /** @var ConstraintViolationBuilderInterface $violation */
+            foreach ($violations as $violation) {
+                $violation->addViolation();
             }
         }
     }
