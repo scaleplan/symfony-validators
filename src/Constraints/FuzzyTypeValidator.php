@@ -80,8 +80,11 @@ class FuzzyTypeValidator extends TypeValidator
         $object = $this->context->getObject();
         $propertyName = $this->context->getPropertyPath();
         $methodName = 'set' . ucfirst($propertyName);
-        if ($object && property_exists($object, $propertyName) && is_callable([$object, $methodName])) {
-            $object->{$methodName}($value);
+        if ($object && property_exists($object, $propertyName)) {
+            if (method_exists($object, $methodName)) {
+                $object->{$methodName}($value);
+            }
+
             $this->context->setNode(
                 $value, $object, $this->context->getMetadata(), $this->context->getPropertyPath()
             );
