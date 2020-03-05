@@ -16,6 +16,8 @@ class FuzzyTypeValidator extends TypeValidator
     /**
      * @param $value
      * @param Constraint $constraint
+     *
+     * @throws \ReflectionException
      */
     public function validate($value, Constraint $constraint) : void
     {
@@ -74,6 +76,8 @@ class FuzzyTypeValidator extends TypeValidator
 
     /**
      * @param $value
+     *
+     * @throws \ReflectionException
      */
     protected function setValue($value) : void
     {
@@ -85,9 +89,10 @@ class FuzzyTypeValidator extends TypeValidator
                 $object->{$methodName}($value);
             }
 
-            $this->context->setNode(
-                $value, $object, $this->context->getMetadata(), $this->context->getPropertyPath()
-            );
+            $refObject = new \ReflectionObject($object);
+            $refProperty = $refObject->getProperty($propertyName);
+            $refProperty->setAccessible(true);
+            $refProperty->setValue($object, $value);
         }
     }
 }
