@@ -36,8 +36,8 @@ class FuzzyTypeValidator extends TypeValidator
 
         $type = strtolower($constraint->type);
         $type = 'boolean' === $type ? 'bool' : $constraint->type;
-        $isFunction = 'is_'.$type;
-        $ctypeFunction = 'ctype_'.$type;
+        $isFunction = 'is_' . $type;
+        $ctypeFunction = 'ctype_' . $type;
 
         if (\function_exists($isFunction) && $isFunction($value)) {
             return;
@@ -75,6 +75,26 @@ class FuzzyTypeValidator extends TypeValidator
     }
 
     /**
+     * @param string $propertyName
+     *
+     * @return \ReflectionProperty
+     *
+     * @throws \ReflectionException
+     */
+    protected function getRefProperty(string $propertyName) : \ReflectionProperty
+    {
+        static $refProperty = [];
+        if (!isset($refProperty[$propertyName])) {
+            $object = $this->context->getObject();
+            $refObject = new \ReflectionObject($object);
+            $refProperty[$propertyName] = $refObject->getProperty($propertyName);
+            $refProperty[$propertyName]->setAccessible(true);
+        }
+
+        return $refProperty[$propertyName];
+    }
+
+    /**
      * @param $value
      *
      * @throws \ReflectionException
@@ -83,16 +103,19 @@ class FuzzyTypeValidator extends TypeValidator
     {
         $object = $this->context->getObject();
         $propertyName = $this->context->getPropertyPath();
+        if (preg_match('/(\w+)\[(\d+)\]/', $propertyName, $matches)) {
+            $index = (int)$matches[2];
+            $propertyName = $matches[1];
+            $value = [$index => $value,] + $this->getRefProperty($propertyName)->getValue($object);
+        }
+
         $methodName = 'set' . ucfirst($propertyName);
         if ($object && property_exists($object, $propertyName)) {
             if (method_exists($object, $methodName)) {
                 $object->{$methodName}($value);
             }
 
-            $refObject = new \ReflectionObject($object);
-            $refProperty = $refObject->getProperty($propertyName);
-            $refProperty->setAccessible(true);
-            $refProperty->setValue($object, $value);
+            $this->getRefProperty($propertyName)->setValue($object, $value);
         }
     }
 }
