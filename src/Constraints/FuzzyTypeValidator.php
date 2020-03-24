@@ -103,7 +103,7 @@ class FuzzyTypeValidator extends TypeValidator
     {
         $object = $this->context->getObject();
         $propertyName = $this->context->getPropertyPath();
-        if (preg_match('/(\w+)\[(\d+)\]/', $propertyName, $matches)) {
+        if (preg_match('/(\w+)\[(\d+)\]$/', $propertyName, $matches)) {
             $index = (int)$matches[2];
             $propertyName = $matches[1];
             $value = [$index => $value,] + $this->getRefProperty($propertyName)->getValue($object);
