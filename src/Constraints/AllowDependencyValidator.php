@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Scaleplan\Validator\Constraints;
 
@@ -19,8 +20,35 @@ use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 class AllowDependencyValidator extends ConstraintValidator
 {
     /**
+     * @param string $propertyName
+     *
+     * @return mixed
+     *
+     * @throws \ReflectionException
+     */
+    protected function getRefPropertyValue(string $propertyName)
+    {
+        static $refPropertyValues = [];
+        if (!isset($refPropertyValues[$propertyName])) {
+            $object = $this->context->getObject();
+            $refObject = new \ReflectionObject($object);
+            $refProperty = $refObject->getProperty($propertyName);
+            $changeAccessible = !$refProperty->isPublic();
+            $changeAccessible && $refProperty->setAccessible(true);
+
+            $refPropertyValues[$propertyName] = $refProperty->getValue($object);
+
+            $changeAccessible && $refProperty->setAccessible(false);
+        }
+
+        return $refPropertyValues[$propertyName];
+    }
+
+    /**
      * @param mixed $value
      * @param Constraint $constraint
+     *
+     * @throws \ReflectionException
      */
     public function validate($value, Constraint $constraint) : void
     {
@@ -38,53 +66,39 @@ class AllowDependencyValidator extends ConstraintValidator
         $violations = [];
         foreach ($constraint->dependencies as $dependency) {
             $methodName = 'get' . ucfirst($dependency);
-            if (!$constraint->strict) {
-                if ((!$constraint->reverse
-                        && (!method_exists($contextObject, $methodName)
-                            || $contextObject->{$methodName}() === null || $contextObject->{$methodName}() === ''))
-                    || ($constraint->reverse
-                        && (method_exists($contextObject, $methodName)
-                            && ($contextObject->{$methodName}() !== null && $contextObject->{$methodName}() !== '')))) {
-                    $this->context->setNode($value, $contextObject, null, $dependency);
-                    $violations[] = $this->context
-                        ->buildViolation(
-                            $constraint->message
-                            ?? 'Not null property "{{ filter }}" required not null property {{{ dependency }}}.'
-                        )
-                        ->setParameter('{{ filter }}', $this->context->getPropertyPath())
-                        ->setParameter('{{ dependency }}', $dependency);
+            if (method_exists($contextObject, $methodName)) {
+                $depValue = $contextObject->{$methodName}();
+            } else {
+                $depValue = $this->getRefPropertyValue($dependency);
+            }
+
+            if ((!$constraint->reverse && ($depValue === null || (!$constraint->strict && $depValue === '')))
+                || ($constraint->reverse && $depValue !== null && !$constraint->strict && $depValue !== '')
+            ) {
+                //$this->context->setNode($depValue, $contextObject, null, $dependency);
+                $violations[] = $this->context
+                    ->buildViolation(
+                        $constraint->message
+                        ?? 'Not null property "{{ filter }}" required '
+                        . (!$constraint->reverse ? 'not ' : '')
+                        . 'null property "{{ dependency }}".'
+                    )
+                    ->setParameter('{{ filter }}', $this->context->getPropertyPath())
+                    ->setParameter('{{ dependency }}', $dependency);
+
+                if ($constraint->all) {
+                    break;
                 }
-                return;
             }
+        }
 
-            if ($constraint->strict) {
-                if ((!$constraint->reverse
-                        && (!method_exists($contextObject, $methodName) || $contextObject->{$methodName}() === null))
-                    || ($constraint->reverse
-                        && (method_exists($contextObject, $methodName) && $contextObject->{$methodName}() !== null))) {
+        if (!$constraint->all && count($constraint->dependencies) > count($violations)) {
+            return;
+        }
 
-                    $this->context->setNode($value, $contextObject, null, $dependency);
-                    $violations[] = $this->context
-                        ->buildViolation(
-                            $constraint->message
-                            ?? ($constraint->reverse
-                                ? 'Not null property "{{ filter }}" required null property {{{ dependency }}}.'
-                                : 'Not null property "{{ filter }}" required not null property {{{ dependency }}}.')
-                        )
-                        ->setParameter('{{ filter }}', $this->context->getPropertyPath())
-                        ->setParameter('{{ dependency }}', $dependency);
-                }
-                return;
-            }
-
-            if (!$constraint->all && count($constraint->dependencies) > count($violations)) {
-                return;
-            }
-
-            /** @var ConstraintViolationBuilderInterface $violation */
-            foreach ($violations as $violation) {
-                $violation->addViolation();
-            }
+        /** @var ConstraintViolationBuilderInterface $violation */
+        foreach ($violations as $violation) {
+            $violation->addViolation();
         }
     }
 }
