@@ -57,6 +57,20 @@ class FuzzyTypeValidator extends TypeValidator
             return;
         }
 
+        if ($type === 'bool') {
+            if ($value === 'true') {
+                $value = true;
+                $this->setValue($value);
+                return;
+            }
+
+            if ($value === 'false') {
+                $value = false;
+                $this->setValue($value);
+                return;
+            }
+        }
+
         $tmpType = gettype($value);
         $tmp = $value;
         settype($tmp, $type);
