@@ -25,14 +25,4 @@ class FuzzyType extends Type
      * @var bool
      */
     public $emptyStringToNull = false;
-
-    /**
-     * @var bool
-     */
-    public $deleteIfEmpty = false;
-
-    /**
-     * @var bool
-     */
-    public $deleteIfNull = false;
 }
