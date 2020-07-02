@@ -20,4 +20,9 @@ class FuzzyType extends Type
     {
         return FuzzyTypeValidator::class;
     }
+
+    /**
+     * @var bool
+     */
+    public $emptyStringToNull = false;
 }

@@ -25,7 +25,7 @@ class FuzzyTypeValidator extends TypeValidator
             throw new UnexpectedTypeException($constraint, FuzzyType::class);
         }
 
-        if (/*$constraint->type !== 'string' && */$value === '') {
+        if (($constraint->type !== 'string' || $constraint->emptyStringToNull) && $value === '') {
             $value = null;
             $this->setValue($value);
         }
