@@ -19,7 +19,7 @@ class NotStrictChoiceValidator extends ChoiceValidator
     public function validate($value, Constraint $constraint) : void
     {
         if (!$constraint instanceof NotStrictChoice) {
-            throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\NotStrictChoice');
+            throw new UnexpectedTypeException($constraint, NotStrictChoice::class);
         }
 
         if (!\is_array($constraint->choices) && !$constraint->callback) {
